@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+	h1 {
+		@apply font-bold text-4xl
+	}
+	label {
+		@apply text-slate-500
+	}
+	input.custom {
+		@apply border-b border-blue-400 pb-1 pl-1
+		focus:outline-none
+		focus:border-b-blue-600
+	}
+}
+
+dialog::backdrop {
+	background-color: skyblue;
+	opacity: .4
+}
+
+.btn {
+	@apply w-[6rem] h-[3rem] rounded-xl text-white px-2 py-1 transition-colors duration-500
+}

@@ -1,0 +1,28 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "set NODE_TLS_REJECT_UNAUTHORIZED=0&&nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "autoprefixer": "^10.4.14",
+    "nuxt": "^3.3.2",
+    "nuxt-icon": "^0.3.3",
+    "postcss": "^8.4.21",
+    "sass": "^1.60.0",
+    "tailwindcss": "^3.3.1"
+  },
+  "dependencies": {
+    "@googlemaps/js-api-loader": "^1.15.1",
+    "@line/bot-sdk": "^7.5.2",
+    "@types/google.maps": "^3.52.5",
+    "@vuepic/vue-datepicker": "^4.3.0",
+    "daisyui": "^2.51.5",
+    "mongoose": "^7.0.3"
+  }
+}
