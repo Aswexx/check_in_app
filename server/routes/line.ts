@@ -10,7 +10,7 @@ import {
   MessageAPIResponseBase
 } from '@line/bot-sdk'
 
-const { lineChannelAccessToken, lineChannelSecret } = useRuntimeConfig().public
+const { lineChannelAccessToken, lineChannelSecret, HOST_URL } = useRuntimeConfig().public
 
 const clientConfig: ClientConfig = {
   channelAccessToken: lineChannelAccessToken || '',
@@ -34,20 +34,11 @@ export default defineEventHandler(async (event) => {
             console.error(err)
           }
 
-          // Return an error message.
-          // return res.status(500).json({
-          //   status: 'error'
-          // })
           return
         }
       })
     )
 
-    // Return a successfull message.
-    // return res.status(200).json({
-    //   status: 'success',
-    //   results
-    // })
     return 'ok'
   }
 )
@@ -66,20 +57,14 @@ const textEventHandler = async (
     const lineUserId = event.source.userId
     const { userId, displayName, pictureUrl } = (await client.getProfile(lineUserId))
 
-    // TODO: 備份使用者頭像，存至 attender collection，要有創建時間、更新時間(用於設計一定期間更新參加者頭像)
-    console.log('line nickname', displayName, pictureUrl)
     // Process all message related variables here.
     const { replyToken } = event
     const { text } = event.message
 
     // Create a new message.
-    // const response: TextMessage = {
-    //   type: 'text',
-    //   text
-    // }
     const message: TextMessage = {
       type: 'text',
-      text: `https://a710-2001-b011-2016-3d40-2dea-a5fc-47b-85f5.ngrok-free.app/check-in/${userId}-${displayName}`
+      text: `${HOST_URL}/check-in/${userId}-${displayName}`
     }
 
 

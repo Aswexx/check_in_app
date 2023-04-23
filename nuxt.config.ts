@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      HOST_URL: process.env.HOST_URL,
       googleApiKey: process.env.GOOGLE_API_KEY,
       mongodbUri: process.env.MONGODB_URI,
       mongodbAltlasUri: process.env.MONGODB_ALTLAS_URI,
