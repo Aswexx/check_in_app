@@ -1,8 +1,4 @@
 <script setup lang="ts">
-
-// let parties = reactive<any[]>([])
-
-
 const { parties } = defineProps<{ parties: PartyData[] | [], userControls: boolean }>()
 
 const expiredOnly = ref(false)
@@ -11,20 +7,38 @@ const currentPage = ref(1)
 const partiesCount = ref(0)
 const PER_PAGE_COUNT = 10
 
-const pagedParties = computed(() => {
+function getExpiredDateString(parties: PartyData[]) {
+	return parties
+		.filter(party => new Date(party.date) < new Date())
+		.map(party => {
+			return {
+				...party,
+				date: useFormatDate(party.date)
+			}
+		})
+}
+
+// TODO: 手機版不切分頁，多做一個回頂部紐?
+const { isMobile } = useUserState()
+
+const partiesToShow = computed(() => {
 	if (expiredOnly.value && keyword.value) {
-		const expiredParties = parties.filter(party => new Date(party.date) < new Date())
+		const expiredParties = getExpiredDateString(parties)
 		const searchedParties = expiredParties.filter(party => {
 			return party.title.includes(keyword.value) || party.address.includes(keyword.value)
 		})
 		partiesCount.value = searchedParties.length
-		return searchedParties.slice(PER_PAGE_COUNT*(currentPage.value - 1), PER_PAGE_COUNT*(currentPage.value - 1) + PER_PAGE_COUNT)
+		return isMobile.value ?
+			searchedParties :
+			searchedParties.slice(PER_PAGE_COUNT * (currentPage.value - 1), PER_PAGE_COUNT * (currentPage.value - 1) + PER_PAGE_COUNT)
 	}
 
 	if (expiredOnly.value && !keyword.value) {
-		const expiredParties = parties.filter(party => new Date(party.date) < new Date())
+		const expiredParties = getExpiredDateString(parties)
 		partiesCount.value = expiredParties.length
-		return expiredParties.slice(PER_PAGE_COUNT*(currentPage.value - 1), PER_PAGE_COUNT*(currentPage.value - 1) + PER_PAGE_COUNT)
+		return isMobile.value ?
+			expiredParties:
+			expiredParties.slice(PER_PAGE_COUNT * (currentPage.value - 1), PER_PAGE_COUNT * (currentPage.value - 1) + PER_PAGE_COUNT)
 	}
 
 	if (!expiredOnly.value && keyword.value) {
@@ -33,94 +47,93 @@ const pagedParties = computed(() => {
 		})
 		partiesCount.value = searchedParties.length
 
-		return searchedParties.slice(PER_PAGE_COUNT*(currentPage.value - 1), PER_PAGE_COUNT*(currentPage.value - 1) + PER_PAGE_COUNT)
+		return isMobile.value ?
+			searchedParties:
+			searchedParties.slice(PER_PAGE_COUNT * (currentPage.value - 1), PER_PAGE_COUNT * (currentPage.value - 1) + PER_PAGE_COUNT)
 	}
+
 	partiesCount.value = parties.length
-	return parties.slice(PER_PAGE_COUNT*(currentPage.value - 1), PER_PAGE_COUNT*(currentPage.value - 1) + PER_PAGE_COUNT)
+	return isMobile.value ?
+		parties.map(party => {
+			return {
+				...party,
+				date: useFormatDate(party.date)
+			}
+		}):
+		parties
+		.slice(PER_PAGE_COUNT * (currentPage.value - 1), PER_PAGE_COUNT * (currentPage.value - 1) + PER_PAGE_COUNT)
+		.map(party => {
+			return {
+				...party,
+				date: useFormatDate(party.date)
+			}
+		})
 })
-
-
-// const partiesCount = computed(() => {
-// 	return showingParties.value.length
-// })
 
 function onChangeCurrentPage(page: number) {
 	currentPage.value = page
 }
 
-// created
-// fix: map 完 expired 功能受影響
-	// const { data } = await useFetch('/api/parties')
-	// parties.push(...data.value as any[])
-	// parties = parties.map(party => {
-	// 	return {
-	// 		...party,
-	// 		date: new Date(party.date).toLocaleDateString('zh-TW', {
-	// 			weekday: 'long',
-	// 				year: 'numeric',
-	// 				month: 'long',
-	// 				day: 'numeric',
-	// 				hour: 'numeric',
-	// 				minute: 'numeric',
-	// 				timeZone: 'Asia/Taipei'
-	// 			})
-	// 		}
-	// 	})
-//
-
 </script>
 
 <template>
-	<div class="flex flex-col items-center space-y-5 w-full overflow-x-auto p-4">
+	<div class="flex flex-col items-center space-y-5 w-full p-4">
 		<div v-if="userControls" lass="w-[175px] mr-7 form-control self-end">
-			<div>
-				<input v-model="keyword" type="text" placeholder="搜尋名稱或地點關鍵字">
+			<div class="flex items-center justify-center">
+				<input class="px-4 py-2" v-model="keyword" type="text" placeholder="聚會名稱或地點關鍵字">
+				<IconMagnify class="-ml-6"/>
 			</div>
 			<label class="cursor-pointer label">
 				<span class="label-text text-red-300">只顯示到期的聚會</span> 
-				<input type="checkbox" class="toggle toggle-primary" v-model="expiredOnly" :checked="expiredOnly" />
+				<input type="checkbox" class="toggle toggle-primary" 
+					v-model="expiredOnly" 
+					:checked="expiredOnly"
+				/>
 			</label>
 		</div>
 
 		<table class="table table-zebra table-compact w-full">
 			<!-- head -->
 			<thead>
-				<tr>
+				<tr class="hidden sm:table-row">
 					<th></th>
 					<th>聚會名稱</th>
 					<th>時間</th>
 					<th>地點</th>
-					<!-- <th>預計參加人數</th> -->
 					<th>查看詳細</th>
 				</tr>
 			</thead>
 			<tbody>
 				<!-- row 1 -->
-				<tr v-for="(party,index) in pagedParties" :key="party._id">
-					<td>{{ index + 1 }}</td>
+				<tr class="w-[100vw] block sm:table-row" 
+					v-for="(party,index) in partiesToShow" :key="party._id"
+				>
+					<td class="hidden sm:table-cell">{{ index + 1 }}</td>
 					<td>{{ party.title }}</td>
-					<td class="text-left">{{ party.date }}</td>
-					<td class="text-left whitespace-normal break-words">{{ party.address }}</td>
-					<!-- <td>{{ party.expectedAttenders.length }}</td> -->
-					<td @click="navigateTo(`/parties/${party._id}`)" class="cursor-pointer">詳細</td>
+					<td>{{ party.date }}</td>
+					<td class="whitespace-normal break-words">{{ party.address }}</td>
+					<td>
+						<button @click="navigateTo(`/parties/${party._id}`)" class="btn">詳細</button>
+					</td>
 				</tr>
+
+				<template v-if="partiesToShow.length < PER_PAGE_COUNT">
+					<tr v-for="n in PER_PAGE_COUNT - partiesToShow.length" :key="n">
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="text-left whitespace-normal break-words"></td>
+						<td></td>
+					</tr>
+				</template>
 			</tbody>
 		</table>
 
-		<Pagination 
+		<Pagination
+			class="hidden sm:flex"
 			:perPageCount="PER_PAGE_COUNT" 
 			:partiesCount="partiesCount"
 			@currentPage="onChangeCurrentPage"
 		/>
 	</div>
 </template>
-
-<style>
-th,td {
-	text-align: center;
-}
-
-td {
-	height: 60px
-}
-</style>

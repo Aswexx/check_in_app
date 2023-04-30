@@ -20,7 +20,7 @@ const attenders = computed(() => {
 	
 
 	if (showExpected.value) {
-		const mapped = expectedAttenders.map(name => {
+		const expectedResult = expectedAttenders.map(name => {
 			return {
 				lineUserId: actualMap.get(name)?.lineUserId,
 				lineName: name,
@@ -29,10 +29,24 @@ const attenders = computed(() => {
 			}
 		})
 
-		return mapped.sort((a, b) => Number(a.checkAt) - Number(b.checkAt))
+		expectedResult.sort((a, b) => Number(new Date(a.checkAt as string)) - Number(new Date(b.checkAt as string)))
+
+		return expectedResult.map(attender => {
+			return {
+				...attender,
+				checkAt: useFormatDate(attender.checkAt!)
+			}
+		})
 	}
 
-	return actualAttenders.filter(actual => !expectSet.has(actual.lineName))
+	return actualAttenders
+		.filter(actual => !expectSet.has(actual.lineName))
+		.map(actual => {
+			return {
+				...actual,
+				checkAt: useFormatDate(actual.checkAt!)
+			}
+		})
 })
 
 function toggleShowExpected() {
@@ -42,30 +56,32 @@ function toggleShowExpected() {
 </script>
 
 <template>
-	<div class="overflow-x-auto w-full">
-		<h1>{{ showExpected ? '預計名單的出席狀況' : '預計名單外的出席者'}}</h1>
+	<div class="flex flex-col items-center justify-center space-y-5 overflow-x-auto w-full">
+		<h2 class="text-2xl">{{ showExpected ? '預計名單的出席狀況' : '預計名單外的出席者'}}</h2>
 		<button class="btn-lg btn-primary rounded-lg" @click="toggleShowExpected">
 			{{ showExpected ? '查看未在預計名單內的出席者' : '查看預計名單內的出席狀況'}}
 		</button>
-		<table class="table w-full">
+		<table class="table table-zebra w-full">
 			<!-- head -->
 			<thead>
-				<tr>
+				<tr class="hidden sm:table-row">
 					<th>Name</th>
 					<th>簽到時間</th>
 					<th>準時</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr 
-					v-for="attender in attenders" 
+				<tr
+					class="flex flex-col sm:table-row"
+					v-for="attender in attenders"
 					:key="attender.lineUserId"
 				>
-					<td>
+					<td class="flex-1 flex justify-center rounded-bl-none sm:table-cell">
 						<div class="flex items-center space-x-3">
 							<div class="avatar">
 								<div class="mask mask-squircle w-12 h-12">
-									<img :src="attender.avatarUrl" />
+									<img v-if="attender.avatarUrl" :src="attender.avatarUrl" />
+									<img v-else src="@/assets/images/default-avatar.svg" />
 								</div>
 							</div>
 							<div>
@@ -73,19 +89,19 @@ function toggleShowExpected() {
 							</div>
 						</div>
 					</td>
+
 					<td>
-						<span class="badge badge-ghost badge-sm" 
+						<span class="mt-4 badge badge-ghost badge-sm border sm:mt-0" 
 							:class="{ 'text-red-500': !attender.checkAt}"
 						>{{ attender.checkAt || '未到' }}
 						</span>
 					</td>
-					<td>
+
+					<td class="hidden sm:table-cell">
 						<IconCheck v-if="attender.checkAt && attender.checkAt < partyDate"/>
 						<IconCross v-else/>
 					</td>
 				</tr>
-
-				
 			</tbody>
 		</table>
 	</div>

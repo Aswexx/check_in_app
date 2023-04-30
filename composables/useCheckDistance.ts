@@ -21,5 +21,5 @@ export default function useCheckDistance(
 
   const d = R * c // 兩點間的距離，單位是米
 
-  return { matchPosition: d <= 500 }
+  return { matchPosition: d <= 5000 }
 }

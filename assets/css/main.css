@@ -8,13 +8,29 @@
 		@apply font-bold text-4xl
 	}
 	label {
-		@apply text-slate-500
+		@apply text-slate-300
 	}
 	input.custom {
 		@apply border-b border-blue-400 pb-1 pl-1
 		focus:outline-none
 		focus:border-b-blue-600
 	}
+}
+
+table tr:last-child td:first-child {
+	@media (min-width: 640px) {
+		border-bottom-left-radius: 10px;
+	}
+}
+
+th {
+	text-align: center;
+}
+
+td {
+	display: block;
+	text-align: center;
+	@apply sm:table-cell sm:h-[65px]
 }
 
 dialog::backdrop {

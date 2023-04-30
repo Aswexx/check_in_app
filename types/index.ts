@@ -5,6 +5,8 @@ declare global {
     _id: string
     title: string
     date: Date | string
+    earliestCheckable: number
+    latestCheckable: number
     address: string
     location: {
       lat: number
@@ -18,7 +20,12 @@ declare global {
     lineUserId: string
     lineName: string
     avatarUrl: string
-    checkAt: Date
+    checkAt: Date | string
+  }
+
+  interface Toast {
+    content: string
+    type: string
   }
 }
 

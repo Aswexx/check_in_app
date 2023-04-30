@@ -9,14 +9,15 @@ const selectedPos = ref({
 const address = ref('')
 const emit = defineEmits(['partyLocation'])
 
+const addressInput = ref<HTMLInputElement>()
 const mapDiv = ref<HTMLElement | null>(null)
 const marker = ref<google.maps.Marker | null>(null)
 let map = ref<google.maps.Map | null>(null)
 
 let markerListener: any = null
+const { triggerToast } = useToast()
 
 function geocode() {
-	alert('geocoding...')
 	const geocoder = new google.maps.Geocoder()
 	geocoder.geocode({ address: address.value }, (results, status) => {
 		if (status === google.maps.GeocoderStatus.OK) {
@@ -25,6 +26,9 @@ function geocode() {
 			selectedPos.value.lat = location.lat()
 			selectedPos.value.lng = location.lng()
 			map.value?.setCenter(location)
+		} else {
+			triggerToast('alert-error','輸入的地址不正確')
+			addressInput.value?.select()
 		}
 	})
 }
@@ -96,7 +100,7 @@ onUnmounted(() => {
 <template>
   <div class="w-3/4 flex flex-col items-center space-y-3">
     <div class="w-3/4">
-      <input class="custom w-full" @change="geocode" v-model.lazy="address" type="text" placeholder="請輸入聚會地址" />
+      <input ref="addressInput" class="custom w-full" @change="geocode" v-model.lazy="address" type="text" placeholder="請輸入聚會地址" />
     </div>
     <div class="w-full h-96" ref="mapDiv"></div>
   </div>

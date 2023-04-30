@@ -7,6 +7,12 @@ export const PartySchema = new Schema({
   date: {
     type: Date
   },
+  earliestCheckable: {
+    type: Number
+  },
+  latestCheckable: {
+    type: Number
+  },
   address: {
     type: String
   },
@@ -24,12 +30,8 @@ export const PartySchema = new Schema({
 export const Party = model('Party', PartySchema)
 
 export default defineEventHandler(async (event) => {
-  const partyId = event.context.params?.partyId
-  console.log('hit', partyId)
   try {
-    const result = await Party.find()
-    console.log('result', result)
-    return result
+    return await Party.find().sort({ date: 'desc' })
   } catch (err) {
     console.error(err)
   }

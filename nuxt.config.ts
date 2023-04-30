@@ -20,7 +20,8 @@ export default defineNuxtConfig({
       mongodbUri: process.env.MONGODB_URI,
       mongodbAltlasUri: process.env.MONGODB_ALTLAS_URI,
       lineChannelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-      lineChannelSecret: process.env.LINE_CHANNEL_SECRET
+      lineChannelSecret: process.env.LINE_CHANNEL_SECRET,
+      lineAvatarUrl: process.env.LINE_AVATAR_URL
     }
   },
   nitro: {

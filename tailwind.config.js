@@ -12,9 +12,10 @@ module.exports = {
     extend: {}
   },
   plugins: [require('daisyui')],
-  // daisyui: {
-  //   themes: ['synthwave', 'dark'],
-  //   darkTheme: 'dark'
-  // }
+  daisyui: {
+    // themes: ['synthwave', 'dark'],
+    themes: ['dark'],
+    darkTheme: 'dark'
+  }
 }
 

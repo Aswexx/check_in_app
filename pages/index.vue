@@ -1,15 +1,13 @@
-<script setup lang="ts">
-// const { data } = useFetch('./api/parties')
-</script>
-
 <template>
-	<!-- <div class="flex items-center justify-center min-h-screen bg-zinc-600">
-		<div class="max-w-[1200px] mt-10 mx-auto flex flex-col md:flex-row">
-			<NavBar/>
-			<GoogleMap/>
+	<div class="hero"
+		style="background-image: url('https://png.pngtree.com/background/20210716/original/pngtree-night-view-city-silhouette-background-picture-image_1345122.jpg');">
+		<div class="hero-overlay bg-opacity-60"></div>
+		<div class="hero-content text-center text-neutral-content">
+			<div class="max-w-md">
+				<h1 class="mb-5 text-5xl font-bold">Hello there</h1>
+				<p class="mb-5">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
+				<button class="btn btn-primary">Get Started</button>
+			</div>
 		</div>
-	</div> -->
-	<div>
-		<h1>Welcome!</h1>
 	</div>
 </template>
