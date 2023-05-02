@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   try {
 		return await Party.updateOne(
       { _id: body.partyId },
-      { $push: { actualAttenders: body.checkInInfoToUpdate } }
+      { $addToSet: { actualAttenders: body.checkInInfoToUpdate } }
     )
   } catch (err) {
     console.error(err)

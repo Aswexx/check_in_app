@@ -80,8 +80,8 @@ function toggleShowExpected() {
 						<div class="flex items-center space-x-3">
 							<div class="avatar">
 								<div class="mask mask-squircle w-12 h-12">
-									<img v-if="attender.avatarUrl" :src="attender.avatarUrl" />
-									<img v-else src="@/assets/images/default-avatar.svg" />
+									<img v-if="attender.avatarUrl" :src="attender.avatarUrl" loading="lazy"/>
+									<img v-else src="@/assets/images/default-avatar.svg" loading="lazy"/>
 								</div>
 							</div>
 							<div>

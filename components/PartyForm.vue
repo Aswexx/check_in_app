@@ -1,16 +1,22 @@
 <script setup lang="ts">
 
-const initPartyInfo = {
+// const initPartyInfo = {
+// 	title: '',
+// 	date: new Date(0),
+// 	earliestCheckable: Infinity,
+// 	latestCheckable: Infinity,
+// 	address: '',
+// 	location: '',
+// 	expectedAttenders: ['']
+// }
+const partyInfo = reactive({
 	title: '',
 	date: new Date(0),
-	earliestCheckable: Infinity,
-	latestCheckable: Infinity,
+	earliestCheckable: NaN,
+	latestCheckable: NaN,
 	address: '',
 	location: '',
 	expectedAttenders: ['']
-}
-const partyInfo = reactive({
-	...initPartyInfo
 })
 
 const earliestOptions = ['半小時前', '1小時前', '2小時前', '不限']
@@ -57,35 +63,37 @@ function handleSubmit() {
 		return triggerToast('alert-error','請選擇聚會日期')
 	}
 
+	if (!partyInfo.earliestCheckable || !partyInfo.latestCheckable) {
+		return triggerToast('alert-error','請選擇最早與最晚可簽到時間')
+	}
+
 	modal.value?.showModal()
 }
 
-const datePicker = ref<any>(null)
-function reset() {
-	Object.assign(partyInfo, initPartyInfo)
-	datePicker.value.picked = ''
-}
-
-async function createNewParty() {
+async function submitNewParty() {
 	modal.value?.close()
-	// await useFetch('/api/parties', {
-	// 	method: 'post',
-	// 	body: partyInfo
-	// })
-	// window.location.reload()
-
-	// toast	
-	triggerToast('alert-success','聚會已建立')
-	reset()
+	try {
+		const { error } = await useFetch('/api/parties', {
+			method: 'post',
+			body: partyInfo,
+		})
+		if (error.value) throw new Error(error.value.message)
+	
+		// toast	
+		triggerToast('alert-success', '聚會已建立')
+		setTimeout(() => {
+			window.location.reload()
+		},1000)
+	} catch (err) {
+		triggerToast('alert-error','聚會建立失敗')
+	}
 }
-
-// TODO: 蒐集允許簽到時間區間，讓實際簽到時有直接依據可以不顯示可簽到的聚會。
 
 </script>
 
 <template>
 	<div class="w-full h-[100dvh] overflow-y-auto">
-		<form action="/" @submit.prevent="handleSubmit" class="
+		<form class="
 		h-full relative flex flex-col items-center pt-2 space-y-2 text-center
 		sm:space-y-0 sm:justify-between sm:py-6 overflow-y-auto">
 
@@ -94,19 +102,20 @@ async function createNewParty() {
 				<input class="custom" type="text" id="name" ref="titleInput" v-model.trim="partyInfo.title">
 			</div>
 			
-
 			<div class="py-1 space-y-2">
 				<label>聚會時間</label>
 				<DatePicker @partyDate="handleDate" ref="datePicker"/>
 			</div>
 
 			<ButtonGroup
+				ref="earliestOptionsButtons"
 				:label="'最早可簽到'"
 				:options="earliestOptions"
 				@user-select="handleUserSelect"
 			/>
 
 			<ButtonGroup
+				ref="latestOptionsButtons"
 				:label="'最晚可簽到'"
 				:options="latestOptions"
 				@user-select="handleUserSelect"
@@ -117,13 +126,13 @@ async function createNewParty() {
 				<GoogleMap @partyLocation="handlePartyLocation"/>
 				<ExpectedList @attenders="handleAttenders"/>
 			</div>
-			<button class="btn bg-primary hover:bg-primary-200">登錄聚會</button>
+			<button @click="handleSubmit" type="button" class="btn bg-primary hover:bg-primary-200">登錄聚會</button>
 		</form>
 
-		<dialog ref="modal" class="text-center space-y-3">
+		<dialog ref="modal" class="text-center space-y-3 rounded-lg">
 			<h1>確認聚會資訊</h1>
 			<h2 class="text-2xl">{{ partyInfo.title }}</h2>
-			<p>{{ partyInfo.date }}</p>
+			<p>{{ useFormatDate(partyInfo.date) }}</p>
 			<p>{{ partyInfo.address }}</p>
 			<div>
 				<div class="flex items-center justify-center space-x-2 border-b">
@@ -135,8 +144,8 @@ async function createNewParty() {
 				</ul>
 			</div>
 			<div class="space-x-6">
-				<button @click="createNewParty" class="btn btn-primary">確認</button>
-				<button @click="modal?.close()" class="btn">取消</button>
+				<button type="button" @click="submitNewParty" class="btn btn-primary">確認</button>
+				<button type="button" @click="modal?.close()" class="btn">取消</button>
 			</div>
 		</dialog>
 

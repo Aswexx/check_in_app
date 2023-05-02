@@ -13,7 +13,7 @@ declare global {
       lng: number
     }
     expectedAttenders: string[] | []
-    actualAttenders: Attender[] | []
+    actualAttenders: Attender[]
   }
 
 	interface Attender {

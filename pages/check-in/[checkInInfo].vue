@@ -9,33 +9,39 @@ const matchParties = ref<PartyData[]>([])
 const checkInInfo = useRoute().params.checkInInfo as string
 const lineAvatarUrl = useRuntimeConfig().public.lineAvatarUrl
 const { isMobile } = useUserState()
+const { triggerToast } = useToast()
 
 async function checkIn(checkInInfo: string, party: PartyData) {
-	// if (party.actualAttenders.find(attender => attender.lineName === checkInName)) {
-	// 	return alert('已經簽到過了')
-	// }
-	const checkInInfoArr = checkInInfo.split('-') // [ lineUserId, lineName, avatarUrl ]
-	const checkInInfoToUpdate = {
+	const checkInInfoArr = checkInInfo.split('-') // [ lineUserId, lineName, avatarId ]
+	if (party.actualAttenders.find(attender => attender.lineName === checkInInfoArr[1] && attender.lineUserId === checkInInfoArr[0] )) {
+		return triggerToast('alert-info', '你已經簽到過此聚會了')
+	}
+
+	if (!checkInInfoArr[1] || !checkInInfoArr[2]) {
+		return triggerToast('alert-error', '請透過 Line BOT 提供的連結操作')
+	}
+	const checkInInfoToUpdate: Attender = {
 		lineUserId: checkInInfoArr[0],
 		lineName: checkInInfoArr[1],
 		avatarUrl: `${lineAvatarUrl}/${checkInInfoArr[2]}`,
 		checkAt: new Date()
 	}
 
-
-	await useFetch('/api/parties', {
+	const { error } = await useFetch('/api/parties', {
 		method: 'put',
 		body: { partyId: party._id ,checkInInfoToUpdate }
 	})
-	console.log(checkInInfo)
-	alert('done')
+	if (error.value) {
+		return triggerToast('alert-error', error.value.message)
+	}
+	party.actualAttenders.push(checkInInfoToUpdate)
+	triggerToast('alert-success', '簽到成功')
 }
 
 onMounted(() => {
-	// if (!isMobile.value) {
-	// 	return navigateTo('/')
-	// }
-	alert('detecting..')
+	if (!isMobile.value) {
+		return navigateTo('/')
+	}
 	navigator.geolocation.getCurrentPosition(pos => {
 		coords.value.lat = pos.coords.latitude
 		coords.value.lng = pos.coords.longitude
@@ -44,15 +50,16 @@ onMounted(() => {
 	})
 })
 
+const  { matchPosition, allowTimeRange } = useCheckable()
+
 watch(
 	() => JSON.parse(JSON.stringify({...coords.value})),
 	(newVal, _oldVal) => {
+		alert('invoke')
 		// @ts-ignore
 		matchParties.value = allParties.value?.filter(party => {
-			console.log(new Date(party.date).getTime())
-			return useCheckDistance(newVal, party.location).matchPosition &&
-				new Date(party.date).getTime() - new Date().getTime() < 30 * 24 * 1 * 60 * 60 * 1000 &&
-				new Date(party.date).getTime() - new Date().getTime() > 0
+			return matchPosition(newVal, party.location) &&
+				allowTimeRange(new Date(party.date), party.earliestCheckable || Infinity, party.latestCheckable || Infinity)
 		})
 		matchParties.value = matchParties.value.map(party => {
 			return {
@@ -68,7 +75,7 @@ watch(
 	<div class="w-1/2 mx-auto">
 		<div>
 			<h1 class="text-center p-4">可簽到的聚會</h1>
-			<div class="h-[500px] overflow-auto">
+			<div class="sm:h-[500px] overflow-auto">
 				<table class="table table-zebra table-compact w-full">
 					<!-- head -->
 					<thead class="hidden sm:table-row">

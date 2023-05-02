@@ -1,5 +1,5 @@
 <template>
-  <ul class="w-full menu menu-horizontal bg-base-100 p-2
+  <ul class="w-full menu menu-horizontal p-2
     sm:menu-vertical sm:w-56 sm:menu-normal
   ">
     <li>

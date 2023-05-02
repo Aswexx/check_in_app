@@ -18,7 +18,6 @@ function getExpiredDateString(parties: PartyData[]) {
 		})
 }
 
-// TODO: 手機版不切分頁，多做一個回頂部紐?
 const { isMobile } = useUserState()
 
 const partiesToShow = computed(() => {
@@ -44,7 +43,13 @@ const partiesToShow = computed(() => {
 	if (!expiredOnly.value && keyword.value) {
 		const searchedParties = parties.filter(party => {
 			return party.title.includes(keyword.value) || party.address.includes(keyword.value)
+		}).map(party => {
+			return {
+				...party,
+				date: useFormatDate(party.date)
+			}
 		})
+
 		partiesCount.value = searchedParties.length
 
 		return isMobile.value ?
