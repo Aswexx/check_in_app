@@ -46,7 +46,7 @@ onMounted(() => {
 		coords.value.lat = pos.coords.latitude
 		coords.value.lng = pos.coords.longitude
 	}, (err) => {
-		alert(`${err.message}`)
+		console.log(err.message)
 	})
 })
 
@@ -55,7 +55,6 @@ const  { matchPosition, allowTimeRange } = useCheckable()
 watch(
 	() => JSON.parse(JSON.stringify({...coords.value})),
 	(newVal, _oldVal) => {
-		alert('invoke')
 		// @ts-ignore
 		matchParties.value = allParties.value?.filter(party => {
 			return matchPosition(newVal, party.location) &&

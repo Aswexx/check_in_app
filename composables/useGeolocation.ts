@@ -13,7 +13,7 @@ export default async function useGeolocation() {
         coords.value.lng = pos.coords.longitude
       },
       (err) => {
-        alert(`${err.message}`)
+        console.log(err.message)
       }
     )
   })

@@ -64,7 +64,6 @@ onMounted(async () => {
 					resolve(true)
 				},
 				(error) => {
-					alert(`${error.message}`)
 					reject(error.message)
 				}
 				)
@@ -86,7 +85,7 @@ onMounted(async () => {
 			selectedPos.value.lng = marker.value!.getPosition()!.lng()
 		})
 	} catch (error) {
-		alert(error)
+		console.log(error)
 	}
 })
 
