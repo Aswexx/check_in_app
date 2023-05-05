@@ -1,14 +1,4 @@
 <script setup lang="ts">
-
-// const initPartyInfo = {
-// 	title: '',
-// 	date: new Date(0),
-// 	earliestCheckable: Infinity,
-// 	latestCheckable: Infinity,
-// 	address: '',
-// 	location: '',
-// 	expectedAttenders: ['']
-// }
 const partyInfo = reactive({
 	title: '',
 	date: new Date(0),
@@ -16,7 +6,7 @@ const partyInfo = reactive({
 	latestCheckable: NaN,
 	address: '',
 	location: '',
-	expectedAttenders: ['']
+	expectedAttenders: [] as string[]
 })
 
 const earliestOptions = ['半小時前', '1小時前', '2小時前', '不限']
