@@ -46,7 +46,6 @@ async function geocodeAddress() {
 }
 
 watch(selectedPos.value, async () => {
-	await geocodeAddress()
 	emit('partyLocation', {
 		location: selectedPos.value,
 		address: address.value
@@ -81,8 +80,9 @@ onMounted(async () => {
 		
 			
 			markerListener = google.maps.event.addListener(marker.value!, 'dragend', () => {
-			selectedPos.value.lat = marker.value!.getPosition()!.lat()
-			selectedPos.value.lng = marker.value!.getPosition()!.lng()
+				selectedPos.value.lat = marker.value!.getPosition()!.lat()
+				selectedPos.value.lng = marker.value!.getPosition()!.lng()
+				geocodeAddress()
 		})
 	} catch (error) {
 		console.log(error)
