@@ -80,8 +80,8 @@ function toggleShowExpected() {
 						<div class="flex items-center space-x-3">
 							<div class="avatar">
 								<div class="mask mask-squircle w-12 h-12">
-									<img v-if="attender.avatarUrl" :src="attender.avatarUrl" loading="lazy"/>
-									<img v-else src="@/assets/images/default-avatar.svg" loading="lazy"/>
+									<img v-if="attender.avatarUrl" :src="attender.avatarUrl" class="skeleton" loading="lazy"/>
+									<img v-else src="@/assets/images/default-avatar.svg" class="skeleton" loading="lazy"/>
 								</div>
 							</div>
 							<div>
@@ -102,7 +102,26 @@ function toggleShowExpected() {
 						<IconCross v-else/>
 					</td>
 				</tr>
+
 			</tbody>
 		</table>
 	</div>
 </template>
+
+<style>
+.skeleton {
+	opacity: .7;
+	animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+	0% {
+		background-color: hsl(200,20%,70%);
+	}
+
+	100% {
+		background-color: hsl(200,20%,95%);
+	}
+}
+
+</style>
