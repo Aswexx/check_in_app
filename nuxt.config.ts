@@ -13,6 +13,9 @@ export default defineNuxtConfig({
       autoprefixer: {}
     }
   },
+  build: {
+    transpile: ['@googlemaps/js-api-loader']
+  },
   runtimeConfig: {
     public: {
       HOST_URL: process.env.HOST_URL,
