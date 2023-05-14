@@ -19,7 +19,7 @@
 					<IconThree/>
 					<div class="flex-1 text-center">
 						<p>分享 LINE BOT 帳號</p>
-						<p>參與者到達地點後透過 LINE BOT 簽到</p>
+						<p class="px-4">參與者到達地點後向 LINE BOT 發送關鍵字: <b class="underline">簽到</b></p>
 					</div>
 				</div>
 
